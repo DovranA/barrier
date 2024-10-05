@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id       String @id @default(cuid())
+  name     String @unique
+  password String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("admin")
+}
+
+model User {
+  id   String @id @default(cuid())
+  name String @unique
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  startTime  DateTime @default(now()) @map("start_time")
+  expireTime DateTime @map("expire_time")
+  car        Car[]
+  card       Card[]
+
+  @@map("user")
+}
+
+model Car {
+  id        String   @id @default(cuid())
+  carNumber String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  user       User?        @relation(fields: [userId], references: [id])
+  userId     String?      @map("user_id")
+  transition Transition[]
+  card       Card[]
+
+  @@map("car")
+}
+
+model Transition {
+  id String @id @default(cuid())
+
+  exist Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  car   Car?    @relation(fields: [carId], references: [id], onDelete: Cascade)
+  carId String? @map("car_id")
+}
+
+model Card {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
+  car    Car    @relation(fields: [carId], references: [id])
+  carId  String @map("car_id")
+}
