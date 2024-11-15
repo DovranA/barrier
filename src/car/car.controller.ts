@@ -54,6 +54,7 @@ export class CarController {
   }
   @HttpCode(200)
   @Get('/:id')
+  @ApiResponse({ status: 200, type: EnterCarOutputDto })
   @ApiParam({ name: 'id', description: 'id', type: 'string' })
   async getById(@Param() param: { id: string }) {
     const { id } = param;

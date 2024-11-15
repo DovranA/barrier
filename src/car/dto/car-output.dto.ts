@@ -41,6 +41,12 @@ export class EnterCarOutputDto {
     format: 'uuid',
     example: 'cm1dxzknt0000mx6e12jc4sc6',
   })
+  id: string;
+  @ApiProperty({
+    nullable: true,
+    format: 'uuid',
+    example: 'cm1dxzknt0000mx6e12jc4sc6',
+  })
   carId: string;
   @IsNotEmpty()
   @Matches(/^[A-Z]{1,2}\d{4}[A-Z]{2,3}$/)
@@ -54,4 +60,32 @@ export class EnterCarOutputDto {
   userId?: string;
   @ApiProperty({ nullable: true })
   userName?: string;
+}
+export class EnterCarOutputDtoWithTransaction {
+  @ApiProperty({
+    nullable: true,
+    format: 'uuid',
+    example: 'cm1dxzknt0000mx6e12jc4sc6',
+  })
+  id: string;
+  @ApiProperty({
+    nullable: true,
+    format: 'uuid',
+    example: 'cm1dxzknt0000mx6e12jc4sc6',
+  })
+  carId: string;
+  @IsNotEmpty()
+  @Matches(/^[A-Z]{1,2}\d{4}[A-Z]{2,3}$/)
+  @ApiProperty({ example: 'AB1234AG' })
+  carNumber: string;
+  @ApiProperty()
+  exist: boolean;
+  @ApiProperty({ format: 'date-time' })
+  enterTime: string;
+  @ApiProperty({ nullable: true })
+  userId?: string;
+  @ApiProperty({ nullable: true })
+  userName?: string;
+  @ApiProperty({ nullable: true })
+  transition: Transition;
 }

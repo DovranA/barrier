@@ -51,6 +51,7 @@ export class CarService {
     );
     const existCars = paginatedExistCars.data.map((transition) => {
       return {
+        id: transition.id,
         carId: transition.carId,
         carNumber: transition.car.carNumber,
         exist: transition.exist,
@@ -67,10 +68,15 @@ export class CarService {
     });
     if (car) {
       const transition = await this.prismaTransaction.create({
-        data: { carId: car.id, createdAt: carInfo.enterTime, exist: true },
+        data: {
+          carId: car.id,
+          createdAt: new Date().toISOString(),
+          exist: true,
+        },
         include: { car: { include: { user: true } } },
       });
       return {
+        id: transition.id,
         carId: transition.carId,
         carNumber: transition.car.carNumber,
         exist: transition.exist,
@@ -81,7 +87,7 @@ export class CarService {
     } else {
       const transition = await this.prismaTransaction.create({
         data: {
-          createdAt: carInfo.enterTime,
+          createdAt: new Date().toISOString(),
           exist: true,
           car: { create: { carNumber: carInfo.carNumber } },
         },
@@ -89,6 +95,7 @@ export class CarService {
       });
       // const existCars = transition.
       return {
+        id: transition.id,
         carId: transition.carId,
         carNumber: transition.car.carNumber,
         exist: transition.exist,

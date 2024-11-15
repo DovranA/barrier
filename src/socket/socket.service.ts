@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSocketDto } from './dto/create-socket.dto';
-import { UpdateSocketDto } from './dto/update-socket.dto';
 import { PrismaService } from 'src/prisma.service';
 import { EnterCarDto } from 'src/car/dto/car-input.dto';
 
@@ -9,8 +7,21 @@ export class SocketService {
   constructor(private prisma: PrismaService) {}
   private readonly prismaCar = this.prisma.car;
   private readonly prismaTransaction = this.prisma.transition;
-  create(createSocketDto: CreateSocketDto) {
-    return 'This action adds a new socket';
+  async leaveCar(carInfo: EnterCarDto) {
+    const car = await this.prismaCar.findFirstOrThrow({
+      where: { carNumber: carInfo.carNumber },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        transition: {
+          where: { exist: true },
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+        user: true,
+      },
+      take: 1,
+    });
+    return car;
   }
   async enterCar(carInfo: EnterCarDto) {
     const car = await this.prismaCar.findFirst({
@@ -18,10 +29,14 @@ export class SocketService {
     });
     if (car) {
       const transition = await this.prismaTransaction.create({
-        data: { carId: car.id, createdAt: carInfo.enterTime, exist: true },
+        data: {
+          carId: car.id,
+          exist: true,
+        },
         include: { car: { include: { user: true } } },
       });
       return {
+        id: transition.id,
         carId: transition.carId,
         carNumber: transition.car.carNumber,
         exist: transition.exist,
@@ -32,14 +47,13 @@ export class SocketService {
     } else {
       const transition = await this.prismaTransaction.create({
         data: {
-          createdAt: carInfo.enterTime,
           exist: true,
           car: { create: { carNumber: carInfo.carNumber } },
         },
         include: { car: { include: { user: true } } },
       });
-      // const existCars = transition.
       return {
+        id: transition.id,
         carId: transition.carId,
         carNumber: transition.car.carNumber,
         exist: transition.exist,

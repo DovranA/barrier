@@ -24,8 +24,15 @@ export class EnterCarDto {
   @ApiProperty({ example: 'AB1234AG' })
   @IsString()
   carNumber: string;
-  @ApiProperty({ format: 'date-time' })
-  @IsOptional()
+}
+
+export class ScanCodeDto {
+  @IsNotEmpty()
+  @Matches(/^[A-Z]{1,2}\d{4}[A-Z]{2,3}$/)
   @IsString()
-  enterTime?: string;
+  carNumber: string;
+  @IsString()
+  enterAt: string;
+  @IsString()
+  scannedCode: string;
 }
